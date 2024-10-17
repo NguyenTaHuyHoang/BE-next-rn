@@ -6,6 +6,7 @@ import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { hashPassword } from '@/helpers/util';
 import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -63,15 +64,22 @@ export class UsersService {
     return { results, totalPages };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(_id: string) {
+    return `This action returns a #${_id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(updateUserDto: UpdateUserDto) {
+    return await this.userModel.updateOne(
+      { _id: updateUserDto._id },
+      { ...updateUserDto },
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(_id: string) {
+    if (mongoose.isValidObjectId(_id)) {
+      return this.userModel.deleteOne({ _id });
+    } else {
+      throw new BadRequestException('Invalid ID');
+    }
   }
 }
