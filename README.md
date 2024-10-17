@@ -1,6 +1,9 @@
-### Môi trường chạy dự án: Node.js v20.14.0
+# Technologies
+# Architecture
+## Overview
 
-https://nodejs.org/download/release/v20.14.0/
+# Setting Up and Running at Local
+## Configuration
 
 ===
 
