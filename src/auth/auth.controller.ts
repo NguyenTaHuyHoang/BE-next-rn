@@ -16,16 +16,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
 import { Public } from '@/decorator/customize';
+import { MailerService } from '@nestjs-modules/mailer';
+
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly mailerService: MailerService,
+  ) {}
 
-  // create(@Body() createAuthDto: CreateAuthDto) {
-  //   return this.authService.signIn(
-  //     createAuthDto.username,
-  //     createAuthDto.password,
-  //   );
-  // }
   @Post('login')
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -43,5 +42,20 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get('mail')
+  @Public()
+  sendEmail() {
+    this.mailerService
+      .sendMail({
+        to: 'nthh01082002@gmail.com', // list of receivers
+        subject: 'Testing Nest MailerModule ✔', // Subject line
+        text: 'welcome', // plaintext body
+        html: '<b>welcome</b>', // HTML body content
+      })
+      .then(() => {})
+      .catch(() => {});
+    return 'ok';
   }
 }
