@@ -7,6 +7,9 @@ import { Model } from 'mongoose';
 import { hashPassword } from '@/helpers/util';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +25,7 @@ export class UsersService {
     } else return false;
   };
   async create(createUserDto: CreateUserDto) {
-    const { name, email, password, phone, address, image } = createUserDto;
+    const { email, password, name, phone, address, image } = createUserDto;
     // check email
     if (await this.isEmailExist(email)) {
       throw new BadRequestException(
@@ -33,9 +36,9 @@ export class UsersService {
     // hash pass
     const hashPass = await hashPassword(password);
     const user = await this.userModel.create({
-      name,
       email,
       password: hashPass,
+      name,
       phone,
       address,
       image,
@@ -85,5 +88,30 @@ export class UsersService {
     } else {
       throw new BadRequestException('Invalid ID');
     }
+  }
+
+  async handleRegister(registerDto: CreateAuthDto) {
+    const { email, password, name } = registerDto;
+    // check email
+    if (await this.isEmailExist(email)) {
+      throw new BadRequestException(
+        `Email exist: ${email}. Please, using another email`,
+      );
+    }
+
+    // hash pass
+    const hashPass = await hashPassword(password);
+    const user = await this.userModel.create({
+      email,
+      password: hashPass,
+      name,
+      isActive: false,
+      codeId: uuidv4(),
+      codeExpired: dayjs().add(1, 'minutes'),
+    });
+
+    // return response
+    return { _id: user.id };
+    // send email
   }
 }
