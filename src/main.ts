@@ -7,6 +7,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
+  // Mỗi endpoint sẽ thêm tiền tố trong mỗi url
+  // nextJS global route prefix
+  app.setGlobalPrefix('api', { exclude: [''] });
   // whitelist: tránh trường hợp update thừa thông tin cho người dùng
   app.useGlobalPipes(
     new ValidationPipe({
@@ -16,9 +19,15 @@ async function bootstrap() {
     }),
   );
 
-  // Mỗi endpoint sẽ thêm tiền tố trong mỗi url
-  // nextJS global route prefix
-  app.setGlobalPrefix('api', { exclude: [''] });
+  // Setup cors (nếu gọi api tại phía client)
+  //config cors
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    credentials: true,
+  });
+
   await app.listen(port);
 }
 bootstrap();
