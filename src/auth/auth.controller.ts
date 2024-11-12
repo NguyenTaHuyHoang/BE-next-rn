@@ -45,6 +45,12 @@ export class AuthController {
     return this.authService.handleCheckCode(codeDto);
   }
 
+  @Post('retry-active')
+  @Public()
+  retryActive(@Body('email') email: string) {
+    return this.authService.handleRetryActive(email);
+  }
+
   // @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
