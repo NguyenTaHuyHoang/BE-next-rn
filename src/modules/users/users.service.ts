@@ -7,7 +7,11 @@ import { Model } from 'mongoose';
 import { hashPassword } from '@/helpers/util';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
-import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import {
+  ChangePasswordDto,
+  CodeAuthDto,
+  CreateAuthDto,
+} from '@/auth/dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -186,5 +190,61 @@ export class UsersService {
     });
 
     return { _id: user.id };
+  }
+
+  async handleRetryPassword(email: string) {
+    // check email
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new BadRequestException('Email not found');
+    }
+
+    // send email
+    // update code
+    const codeId = uuidv4();
+
+    // update user
+    await user.updateOne({
+      codeId: codeId,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Change your password !!!', // Subject line
+      text: 'welcome', // plaintext body
+      template: 'register.hbs',
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: user.codeId,
+      },
+    });
+
+    return { email: user.email };
+  }
+
+  async handleChangePassword(PasswordDto: ChangePasswordDto) {
+    if (PasswordDto.password !== PasswordDto.confirmPassword) {
+      throw new BadRequestException(
+        'Password and password confirmation are incorrect',
+      );
+    }
+    // check email
+    const user = await this.userModel.findOne({ email: PasswordDto.email });
+    if (!user) {
+      throw new BadRequestException('Email not found');
+    }
+
+    // check expire code
+    const checkIsBefore = dayjs().isBefore(user.codeExpired);
+    if (checkIsBefore) {
+      // update newPassword
+      const newPassword = await hashPassword(PasswordDto.password);
+      // update user
+      await user.updateOne({ password: newPassword });
+      return { checkIsBefore };
+    } else {
+      throw new BadRequestException('The code is invalid or has expired');
+    }
   }
 }
