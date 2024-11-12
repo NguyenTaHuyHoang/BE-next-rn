@@ -1,29 +1,45 @@
-# --------------
+# Front-end for Web Application
+- Author: Nguyễn Tạ Huy Hoàng
+- GitHub: [Ng.thhoang](https://github.com/NguyenTaHuyHoang)
+
+## Overview
+
 ## Technologies
-## Architecture
-### Overview
-## Database Modeling 
+- NestJS
+- JWT
+- Passport
+- DB: MongoDB
+
 ## Setting Up and Running at Local
 ### Configuration
+1. Clone the repository:
+```
+git clone https://github.com/NguyenTaHuyHoang/BE-next-rn.git
+```
+
+2. Set up library:
+    - Install packages
+    ```bash
+    npm install
+    ```
+    
+3. Set up env:
+    - Create **.env** file, update environment variables.
+   ```bash
+   PORT=
+   MONGODB_URI=
+
+   JWT_SECRET=
+   JWT_ACCESS-TOKEN_EXPIRED=
+
+   MAIL_USER=
+   MAIL_PASSWORD=
+   ```
+   
 ### Run
+Run the application use cmd
+```bash
+npm run dev
+```
 ## Contact
-## References
-
-===
-
-Các bước cài đặt: (chế độ development)
-
-1. clone code
-2. cài đặt thư viện: npm i
-3. Update file .env.development (nếu cần thiết)
-4. Chạy dự án: npm run dev
-
-===
-
-Cách chạy tại chế độ production:
-
-1. clone code
-2. cài đặt thư viện: npm i
-3. Update file .env.production (nếu cần thiết)
-4. Build dự án: npm run build
-5. Chạy dự án: npm run preview
+If you have any questions or suggestions, please feel free to contact us at nthh01082002@gmail.com
