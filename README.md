@@ -5,7 +5,7 @@
 ## Overview
 
 - Provides RESTful APIs.
-- CRUD users (next.js + nestjs)
+- CRUD users (next.js + nestjs) 
 - Implements authentication and authorization using JWT.
 - Sending email (in template) with NestJS.
 
